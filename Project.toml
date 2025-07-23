@@ -1,0 +1,4 @@
+name = "gpt"
+uuid = "ca0f299c-519a-4eea-bea3-3895a4089a7e"
+authors = ["Daniel Nocito <nocito@ufrj.br>"]
+version = "0.1.0"
