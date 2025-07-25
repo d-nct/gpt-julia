@@ -9,9 +9,9 @@ using Random
 
 export generate_text
 
-function generate_text(model::Model.BigramLanguageModel, max_new_tokens::Int, context::String="")
+function generate_text(model::Model.BigramLanguageModel, tokenizer::Tokenizer.SimpleTokenizer, max_new_tokens::Int, context::String="")
     # set the starting context
-    ctx = Tokenizer.encode(context)
+    ctx = Tokenizer.encode(tokenizer, context)
 
     # generate tokens
     for _ in 1:max_new_tokens

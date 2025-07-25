@@ -12,8 +12,9 @@ export train
 
 function train(; verbose::Bool=true)
     # hiperparameters
-    batch_size = 32
-    block_size = 8
+    batch_size = 32    # B
+    block_size = 8     # T: sequence length/time steps/context length
+    embedding_dim = 128
     max_iters = 3000
     eval_interval = 300
     learning_rate = 1e-2 # alpa
@@ -21,22 +22,21 @@ function train(; verbose::Bool=true)
     eval_iters = 200
 
     # instantiate model
-    vocab_size = Data.get_vocab_size()
-    model = Model.BigramLanguageModel(vocab_size)
+    indices, tokenizer = Data.prepare_data()
+    vocab_size = tokenizer.vocab_size
+    model = Model.BigramLanguageModel(vocab_size, embedding_dim)
 
     if verbose
-        @printf("Training model with %d parameters\n", vocab_size * vocab_size)
+        @printf("Training model with %d parameters\n", vocab_size * embedding_dim)
     end
 
     # training loop
     for iter in 1:max_iters
         # forward pass
         xb, yb = Data.get_batch("train", batch_size=batch_size, seq_len=block_size, percent_train=0.9)
-        # matrix to vector
-        xb = reshape(xb, block_size * batch_size)
-        yb = reshape(yb, block_size * batch_size)
-
-        logits = model(xb)
+        
+        # xb: (T, B)
+        logits = model(xb) # (T, B, V)
         loss = Model.cross_entropy_loss(logits, yb)
 
         if verbose
